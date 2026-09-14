@@ -23,6 +23,10 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'friends',
+        loadChildren: () => import('../features/friends/friends.routes').then(r => r.FRIENDS_ROUTES)
+    },
+    {
         path: 'change/email',
         component: ChangeEmailComponent,
         canActivate: [],
