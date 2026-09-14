@@ -1,7 +1,11 @@
+using Crossdyne.Toolkit.Results;
 using Microsoft.AspNetCore.Mvc;
+using Nexus.Bff.Features.Users.Models;
 using Nexus.Bff.Infrastructure.Clients;
 using Nexus.Bff.Infrastructure.Clients.UserManagement;
+using Shared.Contracts.FileService;
 using Shared.Contracts.UserManagement.Requests;
+using Shared.Contracts.UserManagement.Responses;
 using Shared.Web.Extensions;
 
 namespace Nexus.Bff.Features.Users
@@ -60,6 +64,36 @@ namespace Nexus.Bff.Features.Users
                 {
                     publicKey = result.Value
                 });
+            });
+
+            app.MapGet("users/search", async (
+                [FromQuery] string? input,
+                [FromServices] IUserManagementService userManagementService,
+                [FromServices] IFileService fileService) =>
+            {
+                Result<List<SearchUserResponse>> searchUsersResult = await userManagementService.SearchUsers(input);
+
+                if (searchUsersResult.IsFailure)
+                    return searchUsersResult.Errors.MapToMinimalApiResult();
+
+                var fileRequests = new List<FileRequest>();
+
+                foreach (var search in searchUsersResult.Value)
+                    fileRequests.Add(new FileRequest(search?.AvatarKey?.Bucket!, search?.AvatarKey?.FolderPath!, search?.AvatarKey?.Key!));
+
+                var request = new BatchUrlRequest(fileRequests, Expires: null);
+
+                Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(request);
+
+                List<BffSearchUserResponse> searches = [];
+
+                foreach (var user in searchUsersResult.Value)
+                {
+                    FileUrl? avatarUrl = urlsResult.Value.Urls.FirstOrDefault(url => url.Key == user.AvatarKey?.Key); 
+                    searches.Add(new BffSearchUserResponse(user.InviteCode, user.UserName, avatarUrl?.Url));
+                }
+
+                return Results.Ok(searches);
             });
         }
     }

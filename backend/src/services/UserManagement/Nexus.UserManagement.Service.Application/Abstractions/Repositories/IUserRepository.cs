@@ -7,5 +7,6 @@ namespace Nexus.UserManagement.Service.Application.Abstractions.Repositories
     public interface IUserRepository : IRepository<User>
     {
         Task<bool> CheckAvailableEmail(Email email);
+        Task<bool> ExistFriendshipCode(FriendshipCode code, CancellationToken cancellationToken);
     }
 }

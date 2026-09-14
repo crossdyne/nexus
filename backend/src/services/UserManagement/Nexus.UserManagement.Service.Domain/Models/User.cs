@@ -19,6 +19,7 @@ namespace Nexus.UserManagement.Service.Domain.Models
         public Login Login { get; private set; } 
         public UserName UserName { get; private set; }
         public Email Email { get; private set; }
+        public FriendshipCode FriendshipCode { get; private set; }
 
         /*--Аватар--*/
 
@@ -52,7 +53,7 @@ namespace Nexus.UserManagement.Service.Domain.Models
 
         private User() { }
 
-        private User(UserId id, Login login, UserName userName, Email email, Guid statusId)
+        private User(UserId id, Login login, UserName userName, Email email, FriendshipCode friendshipCode, Guid statusId)
             : base(id)
         {
             Login = login;
@@ -61,15 +62,17 @@ namespace Nexus.UserManagement.Service.Domain.Models
 
             DateRegistration = DateTime.UtcNow;
             DateUpdate = DateTime.UtcNow;
+            FriendshipCode = friendshipCode;
             IdStatus = statusId;
         }
 
         public static User Create(
             Login login, UserName userName,
             Email email,
+            FriendshipCode friendshipCode,
             Guid statusId, Guid? genderId, Guid? countryId)
         {
-            var user = new User(UserId.New(), login, userName, email, statusId);
+            var user = new User(UserId.New(), login, userName, email, friendshipCode, statusId);
 
             if (genderId.HasValue)
                 user.IdGender = genderId;

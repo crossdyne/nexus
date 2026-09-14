@@ -65,6 +65,16 @@ namespace Nexus.UserManagement.Service.Infrastructure.Persistence.Configurations
                 .HasConversion(key => key.HasValue ? key.Value.Value : null, db => !string.IsNullOrWhiteSpace(db) ? S3Key.Restore(db) : (S3Key?)null )
                 .IsRequired(false);
 
+            builder.Property(u => u.FriendshipCode)
+                .HasColumnName("friendship_code")
+                .HasConversion(
+                    code => code.Value,
+                    dbValue => FriendshipCode.Create(dbValue))
+                .UseCollation(PostgresConstants.COLLATION_NAME)
+                .IsRequired();
+
+            builder.HasIndex(u => u.FriendshipCode, "IX_Users_FriendshipCode").IsUnique();
+
             /*__Dates__*/
 
             builder.Property(u => u.DateRegistration)

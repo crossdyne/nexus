@@ -27,6 +27,10 @@ export const routes: Routes = [
         loadChildren: () => import('../features/friends/friends.routes').then(r => r.FRIENDS_ROUTES)
     },
     {
+        path: 'search/users',
+        loadChildren: () => import('../features/search-users/search-users.routes').then(r => r.SEARCH_USERS_ROUTES)
+    },
+    {
         path: 'change/email',
         component: ChangeEmailComponent,
         canActivate: [],

@@ -10,5 +10,7 @@ namespace Nexus.UserManagement.Service.Infrastructure.Persistence.Repositories.U
     internal sealed class UserRepository(UserManagementContext context) : Repository<User, UserManagementContext>(context), IUserRepository
     {
         public async Task<bool> CheckAvailableEmail(Email email) => await _entity.AnyAsync(u => u.Email == email);
+
+        public async Task<bool> ExistFriendshipCode(FriendshipCode code, CancellationToken cancellationToken) => await _entity.AnyAsync(u => u.FriendshipCode == code, cancellationToken);
     }
 }

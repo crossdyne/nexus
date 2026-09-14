@@ -23,5 +23,6 @@ namespace Nexus.Bff.Infrastructure.Clients.UserManagement
         Task<Result<Unit>> DeleteAccountAsync();
         Task<Result<Unit>> ChangeEmailSendCode(ChangeEmailInitRequest request);
         Task<Result<Unit>> ChangeEmail(ChangeEmailRequest request);
+        Task<Result<List<SearchUserResponse>>> SearchUsers(string? input);
     }
 }

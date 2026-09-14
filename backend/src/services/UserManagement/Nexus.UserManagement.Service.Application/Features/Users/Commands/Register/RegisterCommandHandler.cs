@@ -9,6 +9,9 @@ using Nexus.UserManagement.Service.Domain.ValueObjects.User;
 using Nexus.UserManagement.Service.Domain.ValueObjects.Deks;
 using Nexus.UserManagement.Service.Application.Abstractions.Repositories;
 using Nexus.UserManagement.Service.Application.Abstractions.UnitOfWork;
+using System.Security.Cryptography;
+using Shared.Kernel.Errors;
+using Shared.Kernel.Exceptions;
 
 namespace Nexus.UserManagement.Service.Application.Features.Users.Commands.Register
 {
@@ -16,6 +19,8 @@ namespace Nexus.UserManagement.Service.Application.Features.Users.Commands.Regis
         IUnitOfWork unitOfWork,
         IUserRepository userRepository) : IRequestHandler<RegisterCommand, Result>
     {
+        private static readonly char[] FriendshipAlphabet = "23456789ABCDEFGHJKMNPQRSTVWXYZ".ToCharArray();
+
         public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             if (await userRepository.CheckAvailableEmail(Email.Create(request.Email)))
@@ -23,7 +28,7 @@ namespace Nexus.UserManagement.Service.Application.Features.Users.Commands.Regis
 
             string normalizeLogin = request.Login.ToLowerInvariant();
 
-            var user = User.Create(Login.Create(normalizeLogin), UserName.Create(request.UserName), Email.Create(request.Email), EnumStatus.Active.Id, request.IdGender, request.IdCountry);
+            var user = User.Create(Login.Create(normalizeLogin), UserName.Create(request.UserName), Email.Create(request.Email), await GenerateFriendshipCodeAsync(cancellationToken), EnumStatus.Active.Id, request.IdGender, request.IdCountry);
             user.AddMainDek(EncryptedValue.Create(request.EncryptedDek), Salt.Create(request.DekSalt), CryptoVersion.Create(request.CryptoVersion));
             user.AddSrpAuthenticator(Login.Create(normalizeLogin), Verificator.Create(request.EncryptedVerifier), Salt.Create(request.SrpSalt), SrpVersion.Create(request.SrpVersion), CredentialBlob.Create(request.EncryptedVerifierWrapKey), CryptoVersion.Create(request.KeyWrapVersion), AsymmetricKeyId.Create(request.AsymmetricKeyId), CryptoVersion.Create(request.SrpCryptoVersion));
             user.AddEmailAuthenticator(Email.Create(request.Email));
@@ -37,6 +42,28 @@ namespace Nexus.UserManagement.Service.Application.Features.Users.Commands.Regis
             user.ClearDomainEvents();
 
             return Result.Success();
+        }
+
+        private async Task<FriendshipCode> GenerateFriendshipCodeAsync(CancellationToken cancellationToken)
+        {
+            const int partLength = 5;
+            const int maxRetries = 5;
+
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                string firstPart = new(RandomNumberGenerator.GetItems(FriendshipAlphabet, partLength));
+                string secondPart = new(RandomNumberGenerator.GetItems(FriendshipAlphabet, partLength));
+                string thirdPart = new(RandomNumberGenerator.GetItems(FriendshipAlphabet, partLength));
+
+                string fullCode = $"{firstPart}-{secondPart}-{thirdPart}";
+
+                var code = FriendshipCode.Create(fullCode);
+
+                if (!await userRepository.ExistFriendshipCode(code, cancellationToken))
+                    return code;
+            }
+
+            throw new DomainException(new Error(AppErrors.FriendshipCodeExisting, "Не удалось сгенерировать уникальный код друга после нескольких попыток."));
         }
     }
 }

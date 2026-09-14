@@ -1,7 +1,9 @@
 using System.Data;
 using Dapper;
 using Nexus.UserManagement.Service.Application.Abstractions.Repositories;
+using Nexus.UserManagement.Service.Domain.ValueObjects.Common;
 using Nexus.UserManagement.Service.Infrastructure.Helpers;
+using Nexus.UserManagement.Service.Infrastructure.Persistence.Repositories.Users.Models;
 using Shared.Contracts.UserManagement.Responses;
 
 namespace Nexus.UserManagement.Service.Infrastructure.Persistence.Repositories.Users
@@ -70,6 +72,21 @@ namespace Nexus.UserManagement.Service.Infrastructure.Persistence.Repositories.U
             var isExist = await connection.ExecuteScalarAsync<bool>(sql, new { login });
 
             return isExist;
+        }
+
+        public async Task<List<SearchUserResponse>> Search(string userName)
+        {            
+            var sql = SqlLoader.Load("Users", "SearchUsers");
+            IEnumerable<SearchUser> result = await connection.QueryAsync<SearchUser>(sql, new { userName });
+
+            List<SearchUserResponse> users = result.Select(u =>
+            {
+                var avatarKey = S3Key.Restore(u.AvatarKey);
+
+                return new SearchUserResponse(u.FriendshipCode, u.UserName, new S3KeyResponse(avatarKey.FileName, avatarKey.Bucket, avatarKey.FolderPath));
+            }).ToList();
+
+            return users;
         }
     }
 }
