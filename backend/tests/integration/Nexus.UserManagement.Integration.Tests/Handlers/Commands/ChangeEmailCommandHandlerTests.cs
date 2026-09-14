@@ -1,0 +1,95 @@
+using Crossdyne.Toolkit.Results;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Nexus.UserManagement.Application.Abstractions.UnitOfWork;
+using Nexus.UserManagement.Application.Features.Users.Commands.ChangeEmail;
+using Nexus.UserManagement.Domain.Enums;
+using Nexus.UserManagement.Domain.Models;
+using Nexus.UserManagement.Domain.ValueObjects.User;
+using Nexus.UserManagement.Infrastructure.Outbox;
+using Nexus.UserManagement.Infrastructure.Persistence.Contexts;
+using Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users;
+using Shared.Test.Cache;
+using Xunit;
+
+namespace Nexus.UserManagement.Integration.Tests.Handlers.Commands
+{
+    public class ChangeEmailCommandHandlerTests : IClassFixture<TestFixture>, IAsyncLifetime
+    {
+        private readonly TestFixture _fixture;
+        private readonly UserManagementContext _context;
+        private readonly UserRepository _repo;
+        private readonly IUnitOfWork _uow;
+        private readonly OutboxSignal _outboxSignal;
+        private readonly InMemoryCacheService _cache;
+        private readonly ChangeEmailCommandHandler _handler;
+        private readonly CancellationToken _ct = default;
+
+        private string _code = "724014";
+
+        public ChangeEmailCommandHandlerTests(TestFixture fixture)
+        {
+            _fixture = fixture;
+
+            _context = fixture.CreateDbContext();
+            _repo = new UserRepository(_context);
+            _outboxSignal = (OutboxSignal)fixture.CreateOutboxSignal();
+            _uow = fixture.CreateUnitOfWork(_context);
+            _cache = new InMemoryCacheService();
+
+            _handler = new ChangeEmailCommandHandler(_repo, _uow, _cache);
+        }
+
+        public async ValueTask InitializeAsync() => await _fixture.ResetDatabaseAsync();
+
+        public async ValueTask DisposeAsync()
+        {
+            _outboxSignal.Dispose();
+            await _context.DisposeAsync();
+        }
+
+        [Fact]
+        public async Task Handle_ExistingId_ShouldUpdateEmail()
+        {
+            _fixture.FileServiceMock.Reset();
+
+            var user = User.Create(
+                Login.Create("TestLogin"),
+                UserName.Create("TestUserName"),
+                Email.Create("valid@email.com"),
+                FriendshipCode.Create("RGNGJU-JFUEN"),
+                statusId: Guid.NewGuid(),
+                genderId: Guid.NewGuid(),
+                countryId: Guid.NewGuid());
+
+            await _context.Users.AddAsync(user, _ct);
+            await _context.SaveChangesAsync(_ct);
+
+            await _cache.SetStringAsync($"ConfirmCode for {user.Login.Value.ToLowerInvariant()}", _code, TimeSpan.FromMinutes(5));
+            
+            var command = new ChangeEmailCommand(user.Id, "new@email.com", _code);
+
+            var result = await _handler.Handle(command, _ct);
+
+            result.IsSuccess.Should().BeTrue();
+
+            var updated = await _context.Users
+                .AsNoTracking()
+                .Include(u => u.UserAuthenticators)
+                .FirstOrDefaultAsync(u => u.Id == user.Id, _ct);
+
+            updated.Should().NotBeNull();
+            updated!.Email.Value.Should().Be("new@email.com");
+            updated!.UserAuthenticators.FirstOrDefault(ua => ua.Method == UserAuthenticatorType.Email);
+        }
+
+        [Fact]
+        public async Task Handle_NonExistingUserId_ShouldReturnFailureNotFoundCode()
+        {
+            var command = new ChangeEmailCommand(Guid.NewGuid(), "new@email.com", _code);
+            var result = await _handler.Handle(command, _ct);
+            result.IsSuccess.Should().BeFalse();
+            result.Errors.FirstOrDefault(e => e.Code == ErrorCode.NotFound)?.Code.Should().Be(ErrorCode.NotFound);
+        }
+    }
+}

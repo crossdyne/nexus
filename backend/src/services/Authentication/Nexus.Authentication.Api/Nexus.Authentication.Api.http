@@ -1,6 +1,6 @@
-@Nexus.Authentication.Service.Api_HostAddress = http://localhost:5093
+@Nexus.Authentication.Api_HostAddress = http://localhost:5093
 
-GET {{Nexus.Authentication.Service.Api_HostAddress}}/weatherforecast/
+GET {{Nexus.Authentication.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

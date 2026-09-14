@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\shared\core\Shared.Kernel\Shared.Kernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Nexus.UserManagement.Unit.Tests" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <RootNamespace>Nexus.UserManagement.Domain</RootNamespace>
+    <AssemblyName>Nexus.UserManagement.Domain</AssemblyName>
+  </PropertyGroup>
+
+</Project>
