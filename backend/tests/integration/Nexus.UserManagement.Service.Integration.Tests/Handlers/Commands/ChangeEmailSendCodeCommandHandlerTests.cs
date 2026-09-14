@@ -8,6 +8,7 @@ using Nexus.UserManagement.Service.Domain.ValueObjects.User;
 using Nexus.UserManagement.Service.Infrastructure.Outbox;
 using Nexus.UserManagement.Service.Infrastructure.Persistence.Contexts;
 using Nexus.UserManagement.Service.Infrastructure.Persistence.Repositories.Users;
+using Shared.Contracts.UserManagement.Events;
 using Shared.Test.Cache;
 using Xunit;
 
@@ -48,10 +49,13 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
         [Fact]
         public async Task Handle_ValidRequest_ShouldGenerateCodeAndSaveToCache()
         {
+            var uniqueFriendshipCode = $"CODE-{Guid.NewGuid():N}".Substring(0, 11);
+
             var user = User.Create(
                 Login.Create("testlogin"),
                 UserName.Create("TestUser"),
                 Email.Create("old@example.com"),
+                FriendshipCode.Create(uniqueFriendshipCode),
                 statusId: Guid.NewGuid(),
                 genderId: Guid.NewGuid(),
                 countryId: Guid.NewGuid());
@@ -71,6 +75,7 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
 
             var outboxMessages = await _context.Set<OutboxMessage>()
                 .AsNoTracking()
+                .Where(m => m.EventType == typeof(ChangeEmailRequestedIntegrationEvent).FullName)
                 .ToListAsync(_ct);
 
             outboxMessages.Should().ContainSingle();
@@ -83,6 +88,7 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
                 Login.Create("existing"),
                 UserName.Create("Existing"),
                 Email.Create("taken@example.com"),
+                FriendshipCode.Create("RGNGJU-JFUEN"),
                 statusId: Guid.NewGuid(),
                 genderId: Guid.NewGuid(),
                 countryId: Guid.NewGuid());
@@ -91,6 +97,7 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
                 Login.Create("other"),
                 UserName.Create("Other"),
                 Email.Create("other@example.com"),
+                FriendshipCode.Create("DIFFERENT-CODE-123"),
                 statusId: Guid.NewGuid(),
                 genderId: Guid.NewGuid(),
                 countryId: Guid.NewGuid());

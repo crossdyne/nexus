@@ -113,6 +113,7 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
                 Login.Create("existing_user"),
                 UserName.Create("Existing"),
                 Email.Create("duplicate@example.com"),
+                FriendshipCode.Create("RGNGJU-JFUEN"),
                 statusId: Guid.NewGuid(),
                 genderId: null,
                 countryId: null);

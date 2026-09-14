@@ -21,8 +21,9 @@ namespace Nexus.UserManagement.Service.Unit.Tests.DomainModels
             Guid statusId = Guid.NewGuid();
             Guid genderId = Guid.NewGuid();
             Guid countryId = Guid.NewGuid();
+            FriendshipCode friendshipCode = FriendshipCode.Create("FLVLEPG-RGRBRF");
 
-            User user = User.Create(login, userName, email, statusId, genderId, countryId);
+            User user = User.Create(login, userName, email, friendshipCode, statusId, genderId, countryId);
 
             return user;
         }
@@ -60,8 +61,9 @@ namespace Nexus.UserManagement.Service.Unit.Tests.DomainModels
             Guid statusId = Guid.NewGuid();
             Guid genderId = Guid.NewGuid();
             Guid countryId = Guid.NewGuid();
+            FriendshipCode friendshipCode = FriendshipCode.Create("FLVLEPG-RGRBRF");
 
-            User user = User.Create(login, userName, email, statusId, genderId, countryId);
+            User user = User.Create(login, userName, email, friendshipCode, statusId, genderId, countryId);
 
             Assert.Equal(login, user.Login);
             Assert.Equal(userName, user.UserName);
@@ -69,6 +71,7 @@ namespace Nexus.UserManagement.Service.Unit.Tests.DomainModels
             Assert.Equal(statusId, user.IdStatus);
             Assert.Equal(genderId, user.IdGender);
             Assert.Equal(countryId, user.IdCountry);
+            Assert.Equal(friendshipCode, user.FriendshipCode);
         }
 
         [Fact]
@@ -78,13 +81,15 @@ namespace Nexus.UserManagement.Service.Unit.Tests.DomainModels
             UserName userName = UserName.Create("Valid User Name");
             Email email = Email.Create("valid-email@email.com");
             Guid statusId = Guid.NewGuid();
+            FriendshipCode friendshipCode = FriendshipCode.Create("FLVLEPG-RGRBRF");
 
-            User user = User.Create(login, userName, email, statusId, null, null);
+            User user = User.Create(login, userName, email, friendshipCode, statusId, null, null);
 
             Assert.Equal(login, user.Login);
             Assert.Equal(userName, user.UserName);
             Assert.Equal(email, user.Email);
             Assert.Equal(statusId, user.IdStatus);
+            Assert.Equal(friendshipCode, user.FriendshipCode);
             Assert.Null(user.IdGender);
             Assert.Null(user.IdCountry);
         }

@@ -43,6 +43,7 @@ public class TestFixture : IAsyncLifetime
         _mappingRegistry.Map<PasswordResetRequestedDomainEvent, PasswordResetRequestedIntegrationEvent>();
         _mappingRegistry.Map<UserAccountDeletedDomainEvent, UserAccountDeletedIntegrationEvent>();
         _mappingRegistry.Map<UserPasswordResetDomainEvent, UserPasswordResetIntegrationEvent>();
+        _mappingRegistry.Map<UserCreatedDomainEvent, UserCreatedIntegrationEvent>();
     }
 
     public TestUserManagementContext CreateDbContext() => new(_options);

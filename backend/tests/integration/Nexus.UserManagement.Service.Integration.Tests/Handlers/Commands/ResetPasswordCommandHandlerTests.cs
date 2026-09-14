@@ -57,6 +57,7 @@ public class ResetPasswordCommandHandlerTests : IClassFixture<TestFixture>, IAsy
             login,
             UserName.Create("Test User"),
             Email.Create("test@example.com"),
+            FriendshipCode.Create("RGNGJU-JFUEN"),
             statusId: EnumStatus.Active.Id,
             genderId: null,
             countryId: null);

@@ -9,6 +9,7 @@ using Nexus.UserManagement.Service.Domain.ValueObjects.User;
 using Nexus.UserManagement.Service.Infrastructure.Outbox;
 using Nexus.UserManagement.Service.Infrastructure.Persistence.Contexts;
 using Nexus.UserManagement.Service.Infrastructure.Persistence.Repositories.Users;
+using Shared.Contracts.UserManagement.Events;
 using Shared.Test.Cache;
 using Xunit;
 
@@ -49,11 +50,14 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
         [Fact]
         public async Task Handle_ExistingUser_ShouldSaveCodeToCacheAndCreateOutboxMessage()
         {
+            var uniqueFriendshipCode = $"RGNGJU-{Guid.NewGuid():N}".Substring(0, 11); 
+            
             var login = Login.Create("testuser_2024");
             var user = User.Create(
                 login,
                 UserName.Create("Test User"),
                 Email.Create("test@example.com"),
+                FriendshipCode.Create(uniqueFriendshipCode),
                 statusId: EnumStatus.Active.Id,
                 genderId: null,
                 countryId: null);
@@ -73,10 +77,10 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
 
             var outboxMessages = await _context.Set<OutboxMessage>()
                 .AsNoTracking()
+                .Where(m => m.EventType == typeof(PasswordResetRequestedIntegrationEvent).FullName)
                 .ToListAsync(_ct);
 
             outboxMessages.Should().ContainSingle();
-            outboxMessages[0].EventType.Should().Contain("PasswordResetRequested");
         }
 
         [Fact]

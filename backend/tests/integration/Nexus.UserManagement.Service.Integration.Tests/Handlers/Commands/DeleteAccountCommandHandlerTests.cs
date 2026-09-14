@@ -51,6 +51,7 @@ namespace Nexus.UserManagement.Service.Integration.Tests.Handlers.Commands
                 Login.Create("testlogin"),
                 UserName.Create("TestUser"),
                 Email.Create("old@example.com"),
+                FriendshipCode.Create("RGNGJU-JFUEN"),
                 statusId: Guid.NewGuid(),
                 genderId: Guid.NewGuid(),
                 countryId: Guid.NewGuid());
