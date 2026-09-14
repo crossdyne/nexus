@@ -16,6 +16,10 @@ export class MainLayoutComponent{
     private http = inject(LogoutService);
     private router = inject(Router);
 
+    navigate(route: string) {
+        this.router.navigate([route]);
+    }
+
     async logout() {
         const result: Result<void> = await this.http.logout();
 
