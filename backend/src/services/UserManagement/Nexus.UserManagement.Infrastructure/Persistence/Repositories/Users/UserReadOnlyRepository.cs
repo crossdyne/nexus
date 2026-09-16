@@ -74,16 +74,27 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
             return isExist;
         }
 
-        public async Task<List<SearchUserResponse>> Search(string userName)
-        {            
+        public async Task<List<SearchUserResponse>> Search(string input, string notIncludeLogin)
+        {
+            string userName = input
+                .Replace("\\", "\\\\")
+                .Replace("%", "\\%")
+                .Replace("_", "\\_");
+            
             var sql = SqlLoader.Load("Users", "SearchUsers");
-            IEnumerable<SearchUser> result = await connection.QueryAsync<SearchUser>(sql, new { userName });
+            IEnumerable<SearchUser> result = await connection.QueryAsync<SearchUser>(sql, new { userName, notIncludeLogin });
 
             List<SearchUserResponse> users = result.Select(u =>
             {
-                var avatarKey = S3Key.Restore(u.AvatarKey);
+                S3KeyResponse? avatarKey = null;
 
-                return new SearchUserResponse(u.FriendshipCode, u.UserName, new S3KeyResponse(avatarKey.FileName, avatarKey.Bucket, avatarKey.FolderPath));
+                if (u.AvatarKey != null)
+                {
+                    var key = S3Key.Restore(u.AvatarKey);
+                    avatarKey = new S3KeyResponse(key.FileName, key.Bucket, key.FolderPath);
+                }
+                    
+                return new SearchUserResponse(u.FriendshipCode, u.UserName, avatarKey);
             }).ToList();
 
             return users;

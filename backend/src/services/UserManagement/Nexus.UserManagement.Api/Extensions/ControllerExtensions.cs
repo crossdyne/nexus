@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Crossdyne.Toolkit.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace Nexus.UserManagement.Api.Extensions
             var extractData = new ExtractData();
 
             var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            var login = user.FindFirstValue(JwtRegisteredClaimNames.Name);
 
             if (string.IsNullOrEmpty(userIdString))
             {
@@ -25,8 +27,15 @@ namespace Nexus.UserManagement.Api.Extensions
                  return new Error(ErrorCode.BadRequest, "Формат идентификатора был не верный");
             }
 
+            if (string.IsNullOrEmpty(login))
+            {
+                actionResult = controller.Unauthorized("Login не найден в токене.");
+                return new Error(ErrorCode.Unauthorized, "Login отсутствует в claims");
+            }
+
             actionResult = controller.Ok();
             extractData.UserId = userIdGuid;
+            extractData.Login = login;
 
             return extractData;
         }

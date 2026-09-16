@@ -12,6 +12,6 @@ namespace Nexus.UserManagement.Application.Abstractions.Repositories
         Task<GetChangePasswordDataResponse> GetChangePasswordData(Guid userId);
         Task<RecoveryViaKeysPayloadResponse> GetRecoveryKeys(string login);
         Task<bool> ExistUserByLoginAsync(string login);
-        Task<List<SearchUserResponse>> Search(string input);
+        Task<List<SearchUserResponse>> Search(string input, string notIncludeLogin);
     }
 }

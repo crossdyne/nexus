@@ -13,7 +13,7 @@ namespace Nexus.UserManagement.Application.Features.Users.Queries.SearchUsers
             if (string.IsNullOrWhiteSpace(request.Input))
                 return new List<SearchUserResponse>();
 
-            return await repository.Search(request.Input);
+            return await repository.Search(request.Input, request.NotIncludeUserLogin);
         }
     }
 }
