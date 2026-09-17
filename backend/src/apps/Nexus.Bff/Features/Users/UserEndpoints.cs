@@ -71,30 +71,47 @@ namespace Nexus.Bff.Features.Users
                 [FromServices] IUserManagementService userManagementService,
                 [FromServices] IFileService fileService) =>
             {
+                if(string.IsNullOrWhiteSpace(input))
+                    return Results.Ok(new List<BffSearchUserResponse>());
+
                 Result<List<SearchUserResponse>> searchUsersResult = await userManagementService.SearchUsers(input);
 
                 if (searchUsersResult.IsFailure)
                     return searchUsersResult.Errors.MapToMinimalApiResult();
 
-                var fileRequests = new List<FileRequest>();
+                List<SearchUserResponse> targetUsers = searchUsersResult.Value;
+                List<SearchUserResponse> usersWithAvatars = [.. targetUsers.Where(u => u.AvatarKey != null)];
+                List<FileRequest> fileRequests = [.. usersWithAvatars.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
 
-                foreach (var search in searchUsersResult.Value)
-                    fileRequests.Add(new FileRequest(search?.AvatarKey?.Bucket!, search?.AvatarKey?.FolderPath!, search?.AvatarKey?.Key!));
-
-                var request = new BatchUrlRequest(fileRequests, Expires: null);
-
-                Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(request);
-
-                List<BffSearchUserResponse> searches = [];
-
-                foreach (var user in searchUsersResult.Value)
+                var urlLookup = new Dictionary<string, string>();
+                
+                if (fileRequests.Count > 0)
                 {
-                    FileUrl? avatarUrl = urlsResult.Value.Urls.FirstOrDefault(url => url.Key == user.AvatarKey?.Key); 
-                    searches.Add(new BffSearchUserResponse(user.InviteCode, user.UserName, avatarUrl?.Url));
+                    Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(new BatchUrlRequest(fileRequests, Expires: null));
+
+                    if (urlsResult.IsSuccess && urlsResult.Value.Urls.Count > 0)
+                    {
+                        List<FileUrl> urls = urlsResult.Value.Urls;
+                        foreach (var url in urls)
+                        {
+                            urlLookup[url.Key] = url.Url;
+                        }
+                    }
                 }
+
+                List<BffSearchUserResponse> searches = targetUsers.Select(u =>
+                {
+                    string? avatarUrl = null;
+
+                    if (u.AvatarKey != null && urlLookup.TryGetValue(u.AvatarKey.Key, out var url))
+                        avatarUrl = url;
+
+                    return new BffSearchUserResponse(u.InviteCode!, u.UserName!, avatarUrl);
+                }).ToList();
 
                 return Results.Ok(searches);
             });
+
         }
     }
 }
