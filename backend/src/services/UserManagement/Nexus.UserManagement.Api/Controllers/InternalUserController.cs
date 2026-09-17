@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.UserManagement.Application.Features.UserInternal.Queries.GetByLoginInternal;
+using Nexus.UserManagement.Application.Features.Users.Queries.ByInviteCode;
 using Nexus.UserManagement.Application.Features.Users.Queries.GetById;
+using Shared.Contracts.UserManagement.Responses;
 using Shared.Web.Extensions;
 
 namespace Nexus.UserManagement.Api.Controllers
@@ -11,15 +13,13 @@ namespace Nexus.UserManagement.Api.Controllers
     [Route("internal/api/users")]
     public class InternalUserController(IMediator mediator) : Controller
     {
-        private readonly IMediator _mediator = mediator;
-
         [HttpGet("by-login/{login}")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromRoute] string login)
+        public async Task<IActionResult> ByLogin([FromRoute] string login)
         {
-            var command = new GetUserByLoginInternalQuery(login);
+            var query = new GetUserByLoginInternalQuery(login);
 
-            var result = await _mediator.Send(command);
+            var result = await mediator.Send(query);
 
             return result.Match(
                 onSuccess: Ok,
@@ -30,9 +30,19 @@ namespace Nexus.UserManagement.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginById([FromRoute] Guid id)
         {
-            var command = new GetUserByIdQuery(id);
+            var query = new GetUserByIdQuery(id);
 
-            var result = await _mediator.Send(command);
+            var result = await mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("by-invite-code/{inviteCode}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ByInviteCode([FromRoute] string inviteCode)
+        {
+            var query = new GetByInviteCodeQuery(inviteCode);
+            ByInviteCodeResponse result = await mediator.Send(query);
+
             return Ok(result);
         }
     }

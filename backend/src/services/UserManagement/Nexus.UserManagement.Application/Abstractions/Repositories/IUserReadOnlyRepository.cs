@@ -6,6 +6,7 @@ namespace Nexus.UserManagement.Application.Abstractions.Repositories
     {
         Task<UserAuthDataResponse> GetUserByIdAuth(Guid userId);
         Task<UserAuthDataResponse> GetUserByLoginAuth(string login);
+        Task<ByInviteCodeResponse> GetByInviteCode(string inviteCode);
         Task<ProfileInfoResponse> GetProfileInfo(Guid userId);
         Task<PublicEncryptionInfoResponse> GetPublicEncryptionInfoResponse(string login);
         Task<DekResponse> GetDek(Guid userId);

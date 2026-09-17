@@ -26,6 +26,14 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
             return user!;
         }
 
+        public async Task<ByInviteCodeResponse> GetByInviteCode(string inviteCode)
+        {
+            var sql = SqlLoader.Load("Users", "GetUserByInviteCode");
+            var user = await connection.QueryFirstOrDefaultAsync<ByInviteCodeResponse>(sql, new { inviteCode });
+
+            return user!;
+        }
+
         public async Task<ProfileInfoResponse> GetProfileInfo(Guid userId)
         {
             var sql = SqlLoader.Load("Users", "GetProfileInfo");

@@ -9,6 +9,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Persistence\Repositories\Users\Sql\GetUserByIdAuth.sql" />
     <EmbeddedResource Include="Persistence\Repositories\Users\Sql\GetUserByLoginAuth.sql" />
+    <EmbeddedResource Include="Persistence\Repositories\Users\Sql\GetUserByInviteCode.sql" />
     <EmbeddedResource Include="Persistence\Repositories\Users\Sql\GetProfileInfo.sql" />
     <EmbeddedResource Include="Persistence\Repositories\Users\Sql\GetDek.sql" />
     <EmbeddedResource Include="Persistence\Repositories\Users\Sql\GetPublicEncryptionInfo.sql" />

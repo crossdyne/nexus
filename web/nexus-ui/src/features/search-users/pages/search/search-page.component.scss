@@ -181,13 +181,23 @@
                     cursor: pointer;
                     transition: all 0.2s ease-in-out;
 
-                    &:hover {
+                    &:hover:not(:disabled) {
                         background-color: #4a72d0;
                         box-shadow: 0 4px 12px rgba(89, 131, 228, 0.3);
                     }
 
-                    &:active {
+                    &:active:not(:disabled) {
                         transform: scale(0.96);
+                    }
+
+                    &:disabled {
+                        background-color: #9ca3af;
+                        color: #e5e7eb;
+                        cursor: not-allowed ;
+                        opacity: 0.6 ;
+                        box-shadow: none ;
+                        transform: none ;
+                        pointer-events: none ;
                     }
                 }
             }
