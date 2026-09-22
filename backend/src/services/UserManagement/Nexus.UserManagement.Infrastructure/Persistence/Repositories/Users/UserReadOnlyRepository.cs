@@ -107,5 +107,29 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
 
             return users;
         }
+
+        public async Task<List<RequestsInfoResponse>> RequestsInfo(List<Guid> userIds)
+        {
+            if (userIds == null || userIds.Count == 0)
+                return [];
+
+            var sql = SqlLoader.Load("Users", "GetRequestsInfo");
+            IEnumerable<RequestsInfo> result = await connection.QueryAsync<RequestsInfo>(sql, new { userIds = userIds.ToArray() });
+
+            List<RequestsInfoResponse> users = result.Select(u =>
+            {
+                S3KeyResponse? avatarKey = null;
+
+                if (u.AvatarKey != null)
+                {
+                    var key = S3Key.Restore(u.AvatarKey);
+                    avatarKey = new S3KeyResponse(key.FileName, key.Bucket, key.FolderPath);
+                }
+
+                return new RequestsInfoResponse(u.UserId, u.UserName, avatarKey);
+            }).ToList();
+
+            return users;
+        }
     }
 }
