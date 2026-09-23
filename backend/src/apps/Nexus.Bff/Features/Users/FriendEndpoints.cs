@@ -28,6 +28,43 @@ namespace Nexus.Bff.Features.Users
                 return Results.Ok();
             });
 
+            builder.MapPost("friends/decline", async (
+                [FromBody] DeclineFriendRequest request, 
+                [FromServices] ISocialGraphClient client) =>
+            {
+                Result<Unit> result = await client.DeclineFriendRequest(request);
+                
+                if (result.IsFailure)
+                    return result.Errors.MapToMinimalApiResult();
+
+                return Results.Ok();
+                
+            });
+
+            builder.MapPost("friends/cancel", async (
+                [FromBody] CancelFriendRequest request, 
+                [FromServices] ISocialGraphClient client) =>
+            {
+                Result<Unit> result = await client.CancelFriendRequest(request);
+                
+                if (result.IsFailure)
+                    return result.Errors.MapToMinimalApiResult();
+
+                return Results.Ok();
+            });
+
+            builder.MapPost("friends/accept", async (
+                [FromBody] AcceptFriendRequest request, 
+                [FromServices] ISocialGraphClient client) =>
+            {
+                Result<Unit> result = await client.AcceptFriendRequest(request);
+                
+                if (result.IsFailure)
+                    return result.Errors.MapToMinimalApiResult();
+
+                return Results.Ok();
+            });
+
             builder.MapGet("friends/incoming", async (
                 [FromServices] ISocialGraphClient client,
                 [FromServices] IUserManagementService userManagementService,

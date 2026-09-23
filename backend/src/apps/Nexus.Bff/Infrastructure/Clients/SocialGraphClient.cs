@@ -37,7 +37,7 @@ namespace Nexus.Bff.Infrastructure.Clients
             }
             catch (Exception ex)
             {
-                return new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на дружбу: {ex}");
+                return new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на получение списка входящих запросов дружбы: {ex}");
             }
         }
 
@@ -52,7 +52,55 @@ namespace Nexus.Bff.Infrastructure.Clients
             }
             catch (Exception ex)
             {
-                return new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на дружбу: {ex}");
+                return new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на получение списка исходящих запросов дружбы: {ex}");
+            }
+        }
+
+        public async Task<Result<Unit>> DeclineFriendRequest(DeclineFriendRequest request)
+        {            
+            try
+            {            
+                var response = await http.PostAsJsonAsync("api/v1/friends/request/decline", request, jsonOptions.Value);
+
+                response.EnsureSuccessStatusCode();
+                    
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                return Result<Unit>.Failure(new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на отмену дружбы: {ex}"));
+            }
+        }
+
+        public async Task<Result<Unit>> CancelFriendRequest(CancelFriendRequest request)
+        {            
+            try
+            {            
+                var response = await http.PostAsJsonAsync("api/v1/friends/request/cancel", request, jsonOptions.Value);
+
+                response.EnsureSuccessStatusCode();
+                    
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                return Result<Unit>.Failure(new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на отмену запроса дружбы: {ex}"));
+            }
+        }
+
+        public async Task<Result<Unit>> AcceptFriendRequest(AcceptFriendRequest request)
+        {            
+            try
+            {            
+                var response = await http.PostAsJsonAsync("api/v1/friendship/accept", request, jsonOptions.Value);
+
+                response.EnsureSuccessStatusCode();
+                    
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                return Result<Unit>.Failure(new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на принятие дружбы: {ex}"));
             }
         }
     }
