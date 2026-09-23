@@ -102,7 +102,7 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
                     avatarKey = new S3KeyResponse(key.FileName, key.Bucket, key.FolderPath);
                 }
                     
-                return new SearchUserResponse(u.FriendshipCode, u.UserName, avatarKey);
+                return new SearchUserResponse(u.UserId, u.FriendshipCode, u.UserName, avatarKey);
             }).ToList();
 
             return users;

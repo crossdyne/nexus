@@ -1,4 +1,5 @@
 SELECT 
+    u.id::text as "UserId",
     u.friendship_code as "FriendshipCode",
     u.user_name as "UserName",
     u.avatar_key as "AvatarKey"

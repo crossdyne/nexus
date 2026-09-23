@@ -40,7 +40,7 @@ export class SearchPageComponent {
         const result: Result<Unit> = await this.friendRequestService.sendAsync(request);
 
         result.match(
-            () => this.users.update(users => users.map(u => u.inviteCode === inviteCode ? {...u, isSend: true} : u)),
+            () => this.users.update(users => users.map(u => u.inviteCode === inviteCode ? {...u, isISend: true} : u)),
             errors => console.error(MapErrorsHelper.mapErrors(errors)) 
         );
     }

@@ -4,6 +4,7 @@ using Nexus.Bff.Features.Users.Models;
 using Nexus.Bff.Infrastructure.Clients;
 using Nexus.Bff.Infrastructure.Clients.UserManagement;
 using Shared.Contracts.FileService;
+using Shared.Contracts.SocialGraph;
 using Shared.Contracts.UserManagement.Requests;
 using Shared.Contracts.UserManagement.Responses;
 using Shared.Web.Extensions;
@@ -69,12 +70,15 @@ namespace Nexus.Bff.Features.Users
             app.MapGet("users/search", async (
                 [FromQuery] string? input,
                 [FromServices] IUserManagementService userManagementService,
+                [FromServices] ISocialGraphClient socialGraphClient,
                 [FromServices] IFileService fileService) =>
             {
                 if(string.IsNullOrWhiteSpace(input))
                     return Results.Ok(new List<BffSearchUserResponse>());
 
                 Result<List<SearchUserResponse>> searchUsersResult = await userManagementService.SearchUsers(input);
+                Result<List<IncomingFriendResponse>> incomingFriendResult = await socialGraphClient.IncomingFriendRequests();
+                Result<List<OutgoingFriendResponse>> outgoingFriendResult = await socialGraphClient.OutgoingFriendRequests();
 
                 if (searchUsersResult.IsFailure)
                     return searchUsersResult.Errors.MapToMinimalApiResult();
@@ -82,6 +86,8 @@ namespace Nexus.Bff.Features.Users
                 List<SearchUserResponse> targetUsers = searchUsersResult.Value;
                 List<SearchUserResponse> usersWithAvatars = [.. targetUsers.Where(u => u.AvatarKey != null)];
                 List<FileRequest> fileRequests = [.. usersWithAvatars.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
+                List<IncomingFriendResponse> incomingFriend = incomingFriendResult.Value;
+                List<OutgoingFriendResponse> outgoingFriend = outgoingFriendResult.Value;
 
                 var urlLookup = new Dictionary<string, string>();
                 
@@ -101,12 +107,11 @@ namespace Nexus.Bff.Features.Users
 
                 List<BffSearchUserResponse> searches = targetUsers.Select(u =>
                 {
-                    string? avatarUrl = null;
+                    string? avatarUrl = u.AvatarKey != null && urlLookup.TryGetValue(u.AvatarKey.Key, out var url) ? url : null;
+                    bool meSendRequest = incomingFriend.Select(inc => inc.UserId).Contains(u.UserId);
+                    bool iSendRequest = outgoingFriend.Select(outg => outg.UserId).Contains(u.UserId);
 
-                    if (u.AvatarKey != null && urlLookup.TryGetValue(u.AvatarKey.Key, out var url))
-                        avatarUrl = url;
-
-                    return new BffSearchUserResponse(u.InviteCode!, u.UserName!, avatarUrl);
+                    return new BffSearchUserResponse(u.UserId ,u.InviteCode!, u.UserName!, iSendRequest, meSendRequest, avatarUrl);
                 }).ToList();
 
                 return Results.Ok(searches);
