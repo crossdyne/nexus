@@ -14,14 +14,16 @@ export class ProfileInfoComponent {
 
     login = input.required<string>();
     email = input.required<string>();
+    friendshipCode = input.required<string>();
     dataRegistration = input.required<Date>();
 
     private readonly copyMap = new Map<string, () => string>([
         ['login', () => this.login()],
-        ['email', () => this.email()]
+        ['email', () => this.email()],
+        ['friendshipCode', () => this.friendshipCode()]
     ]);
 
-    async copy(elementToCopy: 'login' | 'email' | null){
+    async copy(elementToCopy: 'login' | 'email' | 'friendshipCode' | null){
          if (!elementToCopy)
             return;   
 

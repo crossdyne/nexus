@@ -4,5 +4,6 @@ namespace Nexus.Bff.Models.Responses
         string UserName,
         string Email, 
         DateTime DateRegistration,
+        string FriendshipCode,
         string AvatarUrl);
 }

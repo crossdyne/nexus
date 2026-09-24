@@ -3,5 +3,6 @@ export interface ProfileInfoResponse{
     userName: string,
     email: string, 
     dateRegistration: Date,
+    friendshipCode: string,
     avatarUrl: string
 }

@@ -3,6 +3,7 @@ SELECT
     user_name as UserName,
     email as Email,
     date_registration as DateRegistration,
+    friendship_code as FriendshipCode,
     avatar_key as AvatarS3Key
 FROM users u
 WHERE u.id = @userId
