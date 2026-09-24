@@ -5,6 +5,7 @@ using Nexus.Bff.Infrastructure.Clients;
 using Nexus.Bff.Infrastructure.Clients.UserManagement;
 using Shared.Contracts.FileService;
 using Shared.Contracts.SocialGraph;
+using Shared.Contracts.SocialGraph.Responses;
 using Shared.Contracts.UserManagement.Requests;
 using Shared.Contracts.UserManagement.Responses;
 using Shared.Web.Extensions;
@@ -79,6 +80,7 @@ namespace Nexus.Bff.Features.Users
                 Result<List<SearchUserResponse>> searchUsersResult = await userManagementService.SearchUsers(input);
                 Result<List<IncomingFriendResponse>> incomingFriendResult = await socialGraphClient.IncomingFriendRequests();
                 Result<List<OutgoingFriendResponse>> outgoingFriendResult = await socialGraphClient.OutgoingFriendRequests();
+                Result<List<FriendResponse>> friendsResult = await socialGraphClient.Friends();
 
                 if (searchUsersResult.IsFailure)
                     return searchUsersResult.Errors.MapToMinimalApiResult();
@@ -88,6 +90,7 @@ namespace Nexus.Bff.Features.Users
                 List<FileRequest> fileRequests = [.. usersWithAvatars.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
                 List<IncomingFriendResponse> incomingFriend = incomingFriendResult.Value;
                 List<OutgoingFriendResponse> outgoingFriend = outgoingFriendResult.Value;
+                List<FriendResponse> friends = friendsResult.Value;
 
                 var urlLookup = new Dictionary<string, string>();
                 
@@ -110,13 +113,13 @@ namespace Nexus.Bff.Features.Users
                     string? avatarUrl = u.AvatarKey != null && urlLookup.TryGetValue(u.AvatarKey.Key, out var url) ? url : null;
                     bool meSendRequest = incomingFriend.Select(inc => inc.UserId).Contains(u.UserId);
                     bool iSendRequest = outgoingFriend.Select(outg => outg.UserId).Contains(u.UserId);
+                    bool isFriend = friends.Select(friend => friend.UserId).Contains(u.UserId);
 
-                    return new BffSearchUserResponse(u.UserId ,u.InviteCode!, u.UserName!, iSendRequest, meSendRequest, avatarUrl);
+                    return new BffSearchUserResponse(u.UserId ,u.InviteCode!, u.UserName!, iSendRequest, meSendRequest, isFriend, avatarUrl);
                 }).ToList();
 
                 return Results.Ok(searches);
             });
-
         }
     }
 }

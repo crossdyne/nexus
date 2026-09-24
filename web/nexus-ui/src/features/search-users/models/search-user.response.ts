@@ -3,5 +3,6 @@ export interface SearchUserResponse {
     userName: string;
     isISend: boolean;
     isIWasSend: boolean;
+    isFriend: boolean;
     avatarUrl?: string;
 }

@@ -23,13 +23,19 @@ export class SearchPageComponent {
     input = model<string>('');
     users = signal<SearchUserResponse[]>([]);
 
+    isSearching = signal(false);
+
     async search() {
+        this.isSearching.set(true);
+
         const result: Result<SearchUserResponse[]> = await this.searchService.search(this.input());
 
         result.match(
             users => this.users.set(users),
             errors => console.error(MapErrorsHelper.mapErrors(errors))
         );
+
+        this.isSearching.set(false);
     }
 
     async sendRequest(inviteCode: string) {
@@ -43,5 +49,15 @@ export class SearchPageComponent {
             () => this.users.update(users => users.map(u => u.inviteCode === inviteCode ? {...u, isISend: true} : u)),
             errors => console.error(MapErrorsHelper.mapErrors(errors)) 
         );
+    }
+
+    getActionButtonText(user: SearchUserResponse): string {
+        if (user.isFriend)
+            return 'Уже в друзьях';
+
+        if (user.isISend || user.isIWasSend)
+            return 'Заявка отправлена';
+
+        return 'Добавить';
     }
 }

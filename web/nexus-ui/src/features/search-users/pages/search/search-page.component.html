@@ -12,25 +12,29 @@
     </div>
 
     <div class="users-container">
-        @if (users().length === 0) {
-            <span class="empty-text">Результатов не найдено</span>
+        @if (isSearching()) {
+            <span class="empty-text">Идет поиск...</span>
         } @else {
-            @for (user of users(); track user.inviteCode) {
-            <div class="user-item">
-                <div class="info">
-                    <img class="avatar-img" [src]="user.avatarUrl || '/assets/images/default-avatar.png'" alt="Avatar" />
-                    <span class="user-name">{{ user.userName }}</span>
+            @if (users().length === 0) {
+                <span class="empty-text">Результатов не найдено</span>
+            } @else {
+                @for (user of users(); track user.inviteCode) {
+                <div class="user-item">
+                    <div class="info">
+                        <img class="avatar-img" [src]="user.avatarUrl || '/assets/images/default-avatar.png'" alt="Avatar" />
+                        <span class="user-name">{{ user.userName }}</span>
+                    </div>
+                    <div class="action-container">
+                        <button 
+                            class="add-btn" 
+                            (click)="sendRequest(user.inviteCode)" 
+                            [class.active]="user.isISend || user.isIWasSend || user.isFriend" 
+                            [attr.disabled]="user.isISend || user.isIWasSend || user.isFriend ? '' : null">
+                            {{ getActionButtonText(user) }}
+                        </button>
+                    </div>
                 </div>
-                <div class="action-container">
-                    <button 
-                        class="add-btn" 
-                        (click)="sendRequest(user.inviteCode)" 
-                        [class.active]="user.isISend || user.isIWasSend" 
-                        [attr.disabled]="user.isISend || user.isIWasSend ? '' : null">
-                        {{ user.isISend || user.isIWasSend ? 'Заявка отправлена' : 'Добавить' }}
-                    </button>
-                </div>
-            </div>
+                }
             }
         }
     </div>
