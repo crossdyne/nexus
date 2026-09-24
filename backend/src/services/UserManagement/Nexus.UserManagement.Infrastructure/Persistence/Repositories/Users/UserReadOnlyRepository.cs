@@ -84,13 +84,13 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
 
         public async Task<List<SearchUserResponse>> Search(string input, string notIncludeLogin)
         {
-            string userName = input
+            string searchQuery = input
                 .Replace("\\", "\\\\")
                 .Replace("%", "\\%")
                 .Replace("_", "\\_");
             
             var sql = SqlLoader.Load("Users", "SearchUsers");
-            IEnumerable<SearchUser> result = await connection.QueryAsync<SearchUser>(sql, new { userName, notIncludeLogin });
+            IEnumerable<SearchUser> result = await connection.QueryAsync<SearchUser>(sql, new { searchQuery, notIncludeLogin });
 
             List<SearchUserResponse> users = result.Select(u =>
             {
