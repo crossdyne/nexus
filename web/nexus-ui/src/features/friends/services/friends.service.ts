@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FriendResponse } from "../models/friend.response";
-import { Result } from "@crossdyne/toolkit";
+import { Result, Unit } from "@crossdyne/toolkit";
 import { HttpService } from "../../../core/http/http.service";
 
 @Injectable({
@@ -12,7 +12,11 @@ export class FriendsService extends HttpService {
         super('');
     }
 
-    friends(): Promise<Result<FriendResponse[]>> {
+    async removeFriend(friendId: string): Promise<Result<Unit>> {
+        return this.deleteAsync(`friends/${friendId}`);
+    }
+
+    async friends(): Promise<Result<FriendResponse[]>> {
         return this.getAsync<FriendResponse[]>('friends');
     }
 }

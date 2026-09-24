@@ -66,6 +66,18 @@ namespace Nexus.Bff.Features.Users
                 return Results.Ok();
             });
 
+            builder.MapDelete("friends/{friendId}", async (
+                [FromRoute] string friendId,
+                [FromServices] ISocialGraphClient client) =>
+            {
+                Result<Unit> result = await client.DeleteFriend(friendId);
+
+                if (result.IsFailure)
+                    return result.Errors.MapToMinimalApiResult();
+
+                return Results.Ok();
+            });
+
             builder.MapGet("friends/incoming", async (
                 [FromServices] ISocialGraphClient socialGraphClient,
                 [FromServices] IUserManagementService userManagementService,

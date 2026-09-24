@@ -119,5 +119,21 @@ namespace Nexus.Bff.Infrastructure.Clients
                 return Result<Unit>.Failure(new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на принятие дружбы: {ex}"));
             }
         }
+
+        public async Task<Result<Unit>> DeleteFriend(string friendId)
+        {            
+            try
+            {            
+                var response = await http.DeleteAsync($"api/v1/friendship/{friendId}");
+
+                response.EnsureSuccessStatusCode();
+                    
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                return Result<Unit>.Failure(new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на принятие дружбы: {ex}"));
+            }
+        }
     }
 }
