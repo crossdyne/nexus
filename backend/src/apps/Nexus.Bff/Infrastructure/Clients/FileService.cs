@@ -12,6 +12,20 @@ namespace Nexus.Bff.Infrastructure.Clients
             PropertyNameCaseInsensitive = true 
         };
 
+        public async Task<Result<BatchUrlResponse>> GetUrls(BatchUrlRequest request, CancellationToken cancellationToken = default)
+        {
+            
+            var response = await client.PostAsJsonAsync("api/files/urls", request, cancellationToken);
+            
+            if (!response.IsSuccessStatusCode)
+                return Result<BatchUrlResponse>.Failure(new Error(AppErrors.Api, await response.Content.ReadAsStringAsync(cancellationToken)));
+
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<BatchUrlResponse>(content, options);
+            
+            return Result<BatchUrlResponse>.Success(result);
+        }
+
         public async Task<Result<string>> GetUrl(string bucket, string folder, string key)
         {
             var response = await client.GetAsync($"api/files/url?bucket={bucket}&folder={folder}&key={key}");

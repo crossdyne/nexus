@@ -41,4 +41,7 @@ app.UseCors("AllowLocalFrontend");
 app.UseAuthentication(); 
 app.UseAuthorization();  
 app.MapEndpoints(executingAssembly);
+
+app.Logger.LogInformation("Приложение успешно запустилось и готово к работе! 🚀");
+
 app.Run();

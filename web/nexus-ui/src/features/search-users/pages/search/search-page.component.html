@@ -1,0 +1,41 @@
+<div class="search-user-container">
+    <div class="search-container">
+        <input class="search-input" [(ngModel)]="input" placeholder="Поиск по имени или коду..."
+            (keyup.enter)="search()" />
+        <button class="search-btn" (click)="search()" aria-label="Поиск">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21 21-4.34-4.34" />
+                <circle cx="11" cy="11" r="8" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="users-container">
+        @if (isSearching()) {
+            <span class="empty-text">Идет поиск...</span>
+        } @else {
+            @if (users().length === 0) {
+                <span class="empty-text">Результатов не найдено</span>
+            } @else {
+                @for (user of users(); track user.inviteCode) {
+                <div class="user-item">
+                    <div class="info">
+                        <img class="avatar-img" [src]="user.avatarUrl || '/assets/images/default-avatar.png'" alt="Avatar" />
+                        <span class="user-name">{{ user.userName }}</span>
+                    </div>
+                    <div class="action-container">
+                        <button 
+                            class="add-btn" 
+                            (click)="sendRequest(user.inviteCode)" 
+                            [class.active]="user.isISend || user.isIWasSend || user.isFriend" 
+                            [attr.disabled]="user.isISend || user.isIWasSend || user.isFriend ? '' : null">
+                            {{ getActionButtonText(user) }}
+                        </button>
+                    </div>
+                </div>
+                }
+            }
+        }
+    </div>
+</div>

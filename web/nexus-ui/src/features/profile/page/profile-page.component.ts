@@ -22,7 +22,14 @@ import { ManagementAccountService } from "../services/management-account.service
     templateUrl: './profile-page.component.html',
     styleUrls: ['./profile-page.component.scss'],
     standalone: true,
-    imports: [CommonModule, ProfileInfoComponent, ProfileHeaderComponent, SettingsComponent, ProjectsComponent, OverlayModule],
+    imports: [
+        CommonModule, 
+        ProfileInfoComponent, 
+        ProfileHeaderComponent, 
+        SettingsComponent, 
+        ProjectsComponent, 
+        OverlayModule
+    ],
 })
 export class ProfilePageComponent implements OnInit {
     private profileInfoService = inject(ProfileInfoService);
@@ -31,12 +38,13 @@ export class ProfilePageComponent implements OnInit {
     private dialog = inject(Dialog);
     private managementAccountService = inject(ManagementAccountService);
 
-    activeTab = signal<'profile' | 'settings' | 'projects'>('profile');
+    activeTab = signal<'profile' | 'settings' |'projects'>('profile');
 
     login = signal<string>('');
     userName = signal<string>('');
     email = signal<string>('');
     dateRegistration = signal<Date>(new Date());
+    friendshipCode = signal<string>('');
     avatarUrl = signal<string>('');
 
    ngOnInit(): void {
@@ -62,6 +70,7 @@ export class ProfilePageComponent implements OnInit {
                 this.userName.set(info.userName);
                 this.email.set(info.email);
                 this.dateRegistration.set(new Date(info.dateRegistration)); 
+                this.friendshipCode.set(info.friendshipCode);
                 this.avatarUrl.set(info.avatarUrl);
             },
             errors => console.error('Ошибка получение данных', MapErrorsHelper.mapErrors(errors))
@@ -109,6 +118,7 @@ export class ProfilePageComponent implements OnInit {
                 resultDelete.match(
                     () => {
                         this.logoutService.logout();
+                        window.location.href = '/register';
                     },
                     errors => console.error(MapErrorsHelper.mapErrors(errors))
                 );

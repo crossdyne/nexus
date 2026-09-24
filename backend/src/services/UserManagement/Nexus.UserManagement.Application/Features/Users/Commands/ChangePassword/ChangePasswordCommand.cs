@@ -1,0 +1,27 @@
+using Crossdyne.Toolkit.Results;
+using MediatR;
+using Nexus.UserManagement.Application.Abstractions.Messaging;
+using Nexus.UserManagement.Application.Abstractions.Validators;
+using Shared.Abstractions.Validations;
+
+namespace Nexus.UserManagement.Application.Features.Users.Commands.ChangePassword
+{
+    public sealed record ChangePasswordCommand(
+        Guid UserId,
+        // Srp
+        string EncryptedVerifier, 
+        string SrpSalt, 
+        int SrpVersion, 
+        int SrpCryptoVersion,
+        string EncryptedVerifierWrapKey, 
+        int KeyWrapVersion, 
+        string AsymmetricKeyId,
+        // Dek
+        string EncryptedDek,
+        string DekSalt,
+        int CryptoVersion) : IRequest<Result>, ICommand,
+        IHasGuidUserId,
+        IHasEncryptedVerifier, 
+        IHasSrpSalt, 
+        IHasEncryptedDek;
+}

@@ -8,13 +8,13 @@ services:
   auth-api:
     build:
       context: ..
-      dockerfile: backend/src/services/Authentication/Nexus.Authentication.Service.Api/Dockerfile
+      dockerfile: backend/src/services/Authentication/Nexus.Authentication.Api/Dockerfile
     image: nexus/auth-api:1.0.0
 
   user-management-api:
     build:
       context: ..
-      dockerfile: backend/src/services/UserManagement/Nexus.UserManagement.Service.Api/Dockerfile
+      dockerfile: backend/src/services/UserManagement/Nexus.UserManagement.Api/Dockerfile
     image: nexus/user-management-api:1.0.0
 
   nexus-ui:

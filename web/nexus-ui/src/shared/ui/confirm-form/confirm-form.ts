@@ -4,10 +4,10 @@ import { ConfirmFormResult } from './model/confirm-form.result';
 import { ConfirmFormData } from './model/confirm-form.data';
 
 @Component({
-  selector: 'confirm-form',
-  imports: [],
-  templateUrl: './confirm-form.html',
-  styleUrl: './confirm-form.scss',
+    selector: 'confirm-form',
+    imports: [],
+    templateUrl: './confirm-form.html',
+    styleUrl: './confirm-form.scss',
 })
 export class ConfirmFormComponent {
     private dialogRef = inject(DialogRef<ConfirmFormResult>);
@@ -17,10 +17,10 @@ export class ConfirmFormComponent {
     message = signal<string>(this.data.body);
 
     confirm(status: 'ok' | 'no') {
-      const result: ConfirmFormResult = {
-        status: status
-      } 
+        const result: ConfirmFormResult = {
+            status: status
+        }
 
-      this.dialogRef.close(result);
+        this.dialogRef.close(result);
     }
 }

@@ -14,6 +14,7 @@ namespace Nexus.Bff.Extensions
             services.AddHttpClient<IAuthClient, AuthClient>(client => client.BaseAddress = new Uri(configuration["Urls:AuthServices"]!)).AddHttpMessageHandler<AccessTokenHandler>();
             services.AddHttpClient<IUserManagementService, UserManagementService>(client => client.BaseAddress = new Uri(configuration["Urls:UserManagement"]!)).AddHttpMessageHandler<AccessTokenHandler>();
             services.AddHttpClient<IFileService, FileService>(client => client.BaseAddress = new Uri(configuration["Urls:FileService"]!));
+            services.AddHttpClient<ISocialGraphClient, SocialGraphClient>(client => client.BaseAddress = new Uri(configuration["Urls:SocialGraph"]!)).AddHttpMessageHandler<AccessTokenHandler>();
 
             return services;
         }

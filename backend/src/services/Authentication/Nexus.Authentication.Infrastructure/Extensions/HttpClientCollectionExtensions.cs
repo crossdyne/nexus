@@ -1,0 +1,17 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Nexus.Authentication.Application.Abstractions.Clients;
+using Nexus.Authentication.Infrastructure.HttpClients;
+
+namespace Nexus.Authentication.Infrastructure.Extensions
+{
+    public static class HttpClientCollectionExtensions
+    {
+        public static IServiceCollection RegisterHttpClients(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpClient<IUserManagementServiceClient, UserManagementServiceClient>(client => client.BaseAddress = new Uri(configuration["ServiceUrls:UserManagement"]!));
+            
+            return services;
+        }
+    }
+}

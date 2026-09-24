@@ -77,9 +77,11 @@
             @switch (activeTab()) {
                 @case ('profile') {
                     <profile-info
-                    [login]="login()"
-                    [email]="email()"
-                    [dataRegistration]="dateRegistration()"></profile-info>
+                        [login]="login()"
+                        [email]="email()"
+                        [friendshipCode]="friendshipCode()"
+                        [dataRegistration]="dateRegistration()">
+                    </profile-info>
                 }
                 @case ('projects') {
                     <projects></projects>

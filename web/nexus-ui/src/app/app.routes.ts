@@ -8,28 +8,36 @@ import { changeEmailStepGuard } from '../features/profile/components/change-emai
 import { ChangeEmailConfirmComponent } from '../features/profile/components/change-email/components/change/change-email-confirm.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  {
-    path: '',
-    loadChildren: () => import('../features/authentication/authentication.routes').then(r => r.AUTHENTICATION_ROUTES)
-  },
-  { 
-    path: 'user',
-    loadComponent: () => MainLayoutComponent,
-    children: [
-      { path: 'profile', loadComponent: () => ProfilePageComponent },
-      { path: 'change/password', loadComponent: () => ChangePasswordComponent},
-      { path: '', redirectTo: 'profile', pathMatch: 'full' }
-    ]
-  },
-  {
-    path: 'change/email',
-    component: ChangeEmailComponent,
-    canActivate: [],
-    children: [
-      { path: '', component: ChangeEmailInitComponent, canActivate: [changeEmailStepGuard] },
-      { path: 'confirm', component: ChangeEmailConfirmComponent, canActivate: [changeEmailStepGuard] },
-      { path: '**', redirectTo: '' }
-    ]
-  },
+    { path: '', redirectTo: '/login', pathMatch: 'full' },
+    {
+        path: '',
+        loadChildren: () => import('../features/authentication/authentication.routes').then(r => r.AUTHENTICATION_ROUTES)
+    },
+    {
+        path: 'user',
+        loadComponent: () => MainLayoutComponent,
+        children: [
+            { path: 'profile', loadComponent: () => ProfilePageComponent },
+            { path: 'change/password', loadComponent: () => ChangePasswordComponent },
+            { path: '', redirectTo: 'profile', pathMatch: 'full' }
+        ]
+    },
+    {
+        path: 'friends',
+        loadChildren: () => import('../features/friends/friends.routes').then(r => r.FRIENDS_ROUTES)
+    },
+    {
+        path: 'search/users',
+        loadChildren: () => import('../features/search-users/search-users.routes').then(r => r.SEARCH_USERS_ROUTES)
+    },
+    {
+        path: 'change/email',
+        component: ChangeEmailComponent,
+        canActivate: [],
+        children: [
+            { path: '', component: ChangeEmailInitComponent, canActivate: [changeEmailStepGuard] },
+            { path: 'confirm', component: ChangeEmailConfirmComponent, canActivate: [changeEmailStepGuard] },
+            { path: '**', redirectTo: '' }
+        ]
+    },
 ];

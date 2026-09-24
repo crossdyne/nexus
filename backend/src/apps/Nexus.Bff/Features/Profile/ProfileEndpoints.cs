@@ -123,14 +123,14 @@ namespace Nexus.Bff.Features.Profile
                 S3KeyResponse? s3Key = profileInfoResponse.AvatarS3Key;
 
                 if (s3Key == null)
-                    return Results.Ok(new ProfileInfoBffResponse(profileInfoResponse.Login, profileInfoResponse.UserName, profileInfoResponse.Email, profileInfoResponse.DateRegistration, ""));
+                    return Results.Ok(new ProfileInfoBffResponse(profileInfoResponse.Login, profileInfoResponse.UserName, profileInfoResponse.Email, profileInfoResponse.DateRegistration, profileInfoResponse.FriendshipCode, ""));
 
                 Result<string> urlResult = await fileService.GetUrl(s3Key.Bucket, s3Key.FolderPath, s3Key.Key);
 
                 if (urlResult.IsFailure)
-                    return Results.Ok(new ProfileInfoBffResponse(profileInfoResponse.Login, profileInfoResponse.UserName, profileInfoResponse.Email, profileInfoResponse.DateRegistration, ""));
+                    return Results.Ok(new ProfileInfoBffResponse(profileInfoResponse.Login, profileInfoResponse.UserName, profileInfoResponse.Email, profileInfoResponse.DateRegistration, profileInfoResponse.FriendshipCode, ""));
 
-                return Results.Ok(new ProfileInfoBffResponse(profileInfoResponse.Login, profileInfoResponse.UserName, profileInfoResponse.Email, profileInfoResponse.DateRegistration, urlResult.Value)); 
+                return Results.Ok(new ProfileInfoBffResponse(profileInfoResponse.Login, profileInfoResponse.UserName, profileInfoResponse.Email, profileInfoResponse.DateRegistration, profileInfoResponse.FriendshipCode, urlResult.Value)); 
             }).RequireAuthorization();
 
             app.MapPatch("change/avatar", async (

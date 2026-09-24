@@ -5,5 +5,6 @@ namespace Shared.Contracts.UserManagement.Responses
         string UserName,
         string Email, 
         DateTime DateRegistration,
+        string FriendshipCode,
         S3KeyResponse? AvatarS3Key);
 }
