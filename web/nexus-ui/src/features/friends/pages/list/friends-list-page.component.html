@@ -1,0 +1,36 @@
+<div class="friend-container">
+
+    <div class="friend-info">
+        <div class="block-header">
+            <div class="block-title">
+                <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="7 13 12 18 17 13"></polyline>
+                    <polyline points="7 6 12 11 17 6"></polyline>
+                </svg>
+                <span class="title-text">Кол-во друзей</span>
+                <span class="title-badge">{{ friends().length }}</span>
+            </div>
+            <div class="title-accent"></div>
+        </div>
+
+        <div class="scrollable-list">
+            @if (friends().length === 0) {
+                <span class="empty-text">Друзей не найдено</span>
+            } @else {
+                @for (friend of friends(); track friend.userId) {
+                    <div class="user-item">
+                        <div class="info">
+                            <img class="avatar-img" [src]="friend.avatarUrl || '/assets/images/default-avatar.png'" alt="Avatar" />
+                            <span class="user-name">{{ friend.userName }}</span>
+                        </div>
+                        <div class="action-container">
+                            <button class="action-btn delete-btn" title="Удалить">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash preview-icon"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

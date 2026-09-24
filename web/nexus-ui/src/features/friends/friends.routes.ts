@@ -6,8 +6,12 @@ export const FRIENDS_ROUTES: Routes = [
         path: '',
         component: MainLayoutComponent,
         children: [
+            {
+                path: '',
+                loadComponent: () => import('./pages/list/friends-list-page.component').then(c => c.FriendsListPageComponent)
+            },
             { 
-                path: '', 
+                path: 'requests', 
                 loadComponent: () => import('./pages/requests/requests-page.component').then(c => c.RequestsPageComponent)
             }
         ]

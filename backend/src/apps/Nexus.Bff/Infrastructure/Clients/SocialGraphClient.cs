@@ -4,6 +4,7 @@ using Crossdyne.Toolkit.Results;
 using Microsoft.Extensions.Options;
 using Nexus.Bff.Features.Users.Models;
 using Shared.Contracts.SocialGraph;
+using Shared.Contracts.SocialGraph.Responses;
 using Shared.Kernel.Errors;
 
 namespace Nexus.Bff.Infrastructure.Clients
@@ -34,6 +35,21 @@ namespace Nexus.Bff.Infrastructure.Clients
                 response.EnsureSuccessStatusCode();
                     
                 return await response.Content.ReadFromJsonAsync<List<IncomingFriendResponse>>(jsonOptions.Value);
+            }
+            catch (Exception ex)
+            {
+                return new Error(AppErrors.Api, $"Произошла ошибка при отправке запроса на получение списка входящих запросов дружбы: {ex}");
+            }
+        }
+
+        public async Task<Result<List<FriendResponse>>> Friends()
+        {
+            try
+            {            
+                var response = await http.GetAsync("api/v1/friendship/friends");
+                response.EnsureSuccessStatusCode();
+                    
+                return await response.Content.ReadFromJsonAsync<List<FriendResponse>>(jsonOptions.Value);
             }
             catch (Exception ex)
             {
