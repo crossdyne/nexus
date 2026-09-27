@@ -88,23 +88,7 @@ namespace Nexus.Bff.Features.Users
 
                 List<RequestsInfoResponse> targetUsers = requestsInfo.Value;
                 List<RequestsInfoResponse> usersWithAvatars = [.. targetUsers.Where(u => u.AvatarKey != null)];
-                List<FileRequest> fileRequests = [.. usersWithAvatars.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
-                
-                var urlLookup = new Dictionary<string, string>();
-                
-                if (fileRequests.Count > 0)
-                {
-                    Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(new BatchUrlRequest(fileRequests, Expires: null));
-
-                    if (urlsResult.IsSuccess && urlsResult.Value.Urls.Count > 0)
-                    {
-                        List<FileUrl> urls = urlsResult.Value.Urls;
-                        foreach (var url in urls)
-                        {
-                            urlLookup[url.Key] = url.Url;
-                        }
-                    }
-                }
+                Dictionary<string, string> urlLookup = await ToFileRequests(usersWithAvatars, fileService); 
 
                 List<BffIncomingFriendResponse> searches = targetUsers.Select(u =>
                 {
@@ -129,23 +113,7 @@ namespace Nexus.Bff.Features.Users
 
                 List<RequestsInfoResponse> targetUsers = requestsInfo.Value;
                 List<RequestsInfoResponse> usersWithAvatars = [.. targetUsers.Where(u => u.AvatarKey != null)];
-                List<FileRequest> fileRequests = [.. usersWithAvatars.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
-                
-                var urlLookup = new Dictionary<string, string>();
-                
-                if (fileRequests.Count > 0)
-                {
-                    Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(new BatchUrlRequest(fileRequests, Expires: null));
-
-                    if (urlsResult.IsSuccess && urlsResult.Value.Urls.Count > 0)
-                    {
-                        List<FileUrl> urls = urlsResult.Value.Urls;
-                        foreach (var url in urls)
-                        {
-                            urlLookup[url.Key] = url.Url;
-                        }
-                    }
-                }
+                Dictionary<string, string> urlLookup = await ToFileRequests(usersWithAvatars, fileService); 
 
                 List<BffOutgoingFriendResponse> searches = targetUsers.Select(u =>
                 {
@@ -170,23 +138,7 @@ namespace Nexus.Bff.Features.Users
 
                 List<RequestsInfoResponse> targetUsers = requestsInfo.Value;
                 List<RequestsInfoResponse> usersWithAvatars = [.. targetUsers.Where(u => u.AvatarKey != null)];
-                List<FileRequest> fileRequests = [.. usersWithAvatars.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
-                
-                var urlLookup = new Dictionary<string, string>();
-                
-                if (fileRequests.Count > 0)
-                {
-                    Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(new BatchUrlRequest(fileRequests, Expires: null));
-
-                    if (urlsResult.IsSuccess && urlsResult.Value.Urls.Count > 0)
-                    {
-                        List<FileUrl> urls = urlsResult.Value.Urls;
-                        foreach (var url in urls)
-                        {
-                            urlLookup[url.Key] = url.Url;
-                        }
-                    }
-                }
+                Dictionary<string, string> urlLookup = await ToFileRequests(usersWithAvatars, fileService); 
 
                 List<BffFriendResponse> searches = targetUsers.Select(u =>
                 {
@@ -200,6 +152,29 @@ namespace Nexus.Bff.Features.Users
 
                 return Results.Ok(searches);
             });
+        }
+        
+        private static async Task<Dictionary<string, string>> ToFileRequests(List<RequestsInfoResponse> users, IFileService fileService)
+        {
+            List<FileRequest> fileRequests = [.. users.Select(u => new FileRequest(u.AvatarKey!.Bucket, u.AvatarKey.FolderPath, u.AvatarKey.Key))];
+            
+            var urlLookup = new Dictionary<string, string>();
+            
+            if (fileRequests.Count > 0)
+            {
+                Result<BatchUrlResponse> urlsResult = await fileService.GetUrls(new BatchUrlRequest(fileRequests, Expires: null));
+
+                if (urlsResult.IsSuccess && urlsResult.Value.Urls.Count > 0)
+                {
+                    List<FileUrl> urls = urlsResult.Value.Urls;
+                    foreach (var url in urls)
+                    {
+                        urlLookup[url.Key] = url.Url;
+                    }
+                }
+            }
+
+            return urlLookup;
         }
     }
 }

@@ -1,3 +1,3 @@
 export interface SendFriendRequest {
-    inviteCode: string;
+    userId: string;
 }

@@ -115,7 +115,7 @@ namespace Nexus.Bff.Features.Users
                     bool iSendRequest = outgoingFriend.Select(outg => outg.UserId).Contains(u.UserId);
                     bool isFriend = friends.Select(friend => friend.UserId).Contains(u.UserId);
 
-                    return new BffSearchUserResponse(u.UserId ,u.InviteCode!, u.UserName!, iSendRequest, meSendRequest, isFriend, avatarUrl);
+                    return new BffSearchUserResponse(u.UserId, u.UserName!, iSendRequest, meSendRequest, isFriend, avatarUrl);
                 }).ToList();
 
                 return Results.Ok(searches);

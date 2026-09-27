@@ -26,14 +26,6 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
             return user!;
         }
 
-        public async Task<ByInviteCodeResponse> GetByInviteCode(string inviteCode)
-        {
-            var sql = SqlLoader.Load("Users", "GetUserByInviteCode");
-            var user = await connection.QueryFirstOrDefaultAsync<ByInviteCodeResponse>(sql, new { inviteCode });
-
-            return user!;
-        }
-
         public async Task<ProfileInfoResponse> GetProfileInfo(Guid userId)
         {
             var sql = SqlLoader.Load("Users", "GetProfileInfo");
@@ -102,7 +94,7 @@ namespace Nexus.UserManagement.Infrastructure.Persistence.Repositories.Users
                     avatarKey = new S3KeyResponse(key.FileName, key.Bucket, key.FolderPath);
                 }
                     
-                return new SearchUserResponse(u.UserId, u.FriendshipCode, u.UserName, avatarKey);
+                return new SearchUserResponse(u.UserId, u.UserName, avatarKey);
             }).ToList();
 
             return users;
