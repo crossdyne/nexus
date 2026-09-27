@@ -38,15 +38,15 @@ export class SearchPageComponent {
         this.isSearching.set(false);
     }
 
-    async sendRequest(inviteCode: string) {
+    async sendRequest(userId: string) {
         const request: SendFriendRequest = {
-            inviteCode: inviteCode,
+            userId: userId,
         }
 
         const result: Result<Unit> = await this.friendRequestService.sendAsync(request);
 
         result.match(
-            () => this.users.update(users => users.map(u => u.inviteCode === inviteCode ? {...u, isISend: true} : u)),
+            () => this.users.update(users => users.map(u => u.userId ===  userId ? {...u, isISend: true} : u)),
             errors => console.error(MapErrorsHelper.mapErrors(errors)) 
         );
     }

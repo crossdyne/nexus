@@ -1,5 +1,5 @@
 export interface SearchUserResponse {
-    inviteCode: string;
+    userId: string;
     userName: string;
     isISend: boolean;
     isIWasSend: boolean;
